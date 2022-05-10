@@ -69,7 +69,11 @@ export default {
         async pay(id) {
             await axios
                 .post('http://127.0.0.1:8000/api/members/' + id + '/pay')
-                .catch(error => console.log(error))
+                .catch(error => {
+                    if (error.response.status == 409) {
+                        //TODO: egy divnek visszajelzést küldeni
+                    }
+                })
         },
 
         resetForm() {
