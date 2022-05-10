@@ -16,6 +16,7 @@
                         <img class="w-75" v-if="m.gender == 'F'" src="../assets/female.png">
                         <img class="w-75" v-if="m.gender == null" src="../assets/other.png">
                         <button class="btn btn-primary fs-4" @click="pay(m.id)">Tagdíj befizetés</button>
+                        <div v-if="m.errorMsg != null" class="danger">{{ m.errorMsg }}</div>
                     </div>
                 </div>
             </div>
@@ -70,8 +71,9 @@ export default {
             await axios
                 .post('http://127.0.0.1:8000/api/members/' + id + '/pay')
                 .catch(error => {
-                    if (error.response.status == 409) {
-                        //TODO: egy divnek visszajelzést küldeni
+                    if (error.response.status >= 300) {
+                        let chosenMember = this.members.find(m => m.id === id)
+                        chosenMember.errorMsg = error.response.data.message
                     }
                 })
         },
