@@ -1,13 +1,14 @@
 <template>
-  <HelloWorld />
+  <Member />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Member from './components/Member.vue'
 
 export default {
   name: 'App',
   components: {
+    Member
   }
 }
 </script>
