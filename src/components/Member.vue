@@ -22,9 +22,9 @@
                 </div>
             </div>
             <div id="createMember" class="text-center p-5 d-flex flex-column">
-                <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Név" v-model="myMember.name">
-                <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Nem" v-model="myMember.gender">
-                <input class="w-75 mx-auto fs-4 m-2 mb-4" type="datetime-local" placeholder="Születési év" v-model="myMember.birth_date">
+                <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Név" v-model="this.state.myMember.name">
+                <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Nem" v-model="this.state.myMember.gender">
+                <input class="w-75 mx-auto fs-4 m-2 mb-4" type="datetime-local" placeholder="Születési év" v-model="this.state.myMember.birth_date">
                 <button class="btn btn-success w-25 mx-auto fs-4" @click="addMember">Tagfelvétel</button>
             </div>
         </div>
@@ -36,18 +36,47 @@
 
 <script>
 import axios from 'axios'
+import useVuelidate from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
+import { reactive } from '@vue/reactivity'
+import { computed } from '@vue/runtime-core'
 
 export default {
     name: 'Member',
     
     data() {
         return {
-            members: [],
+            members: []
+        }
+    },
+
+    setup() {
+        const state = reactive({
             myMember: {
                 name: "",
                 gender: "",
                 birth_date: null
             }
+        })
+
+        const rules = computed(() => {
+            return {
+                myMember: {
+                    name: {
+                        required: helpers.withMessage('A név mező kitöltése kötelező!')
+                    },
+                    gender: {
+                        required: helpers.withMessage('A név mező kitöltése kötelező!')
+                    }
+                }
+            }
+        })
+
+        const v$ = useVuelidate(rules, state)
+
+        return {
+            state,
+            v$
         }
     },
 
