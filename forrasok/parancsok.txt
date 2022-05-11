@@ -1,0 +1,5 @@
+composer create-project laravel/laravel bookclubbackend
+
+php artisan make:model -a Payments
+
+vue create bookclubfrontend
