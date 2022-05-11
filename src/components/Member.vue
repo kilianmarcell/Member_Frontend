@@ -15,8 +15,9 @@
                         <img class="w-75" v-if="m.gender == 'M'" src="../assets/male.png">
                         <img class="w-75" v-if="m.gender == 'F'" src="../assets/female.png">
                         <img class="w-75" v-if="m.gender == null" src="../assets/other.png">
-                        <button class="btn btn-primary fs-4" @click="pay(m.id)">Tagdíj befizetés</button>
-                        <div v-if="m.errorMsg != null" class="danger">{{ m.errorMsg }}</div>
+                        <button class="btn btn-primary fs-4 mb-3" @click="pay(m.id)">Tagdíj befizetés</button>
+                        <div v-if="m.message != null && m.errorMsg == null" class="alert alert-success">{{ m.message }}</div>
+                        <div v-if="m.errorMsg != null" class="alert alert-danger">{{ m.errorMsg }}</div>
                     </div>
                 </div>
             </div>
@@ -70,6 +71,10 @@ export default {
         async pay(id) {
             await axios
                 .post('http://127.0.0.1:8000/api/members/' + id + '/pay')
+                .then(response => {
+                    let chosenMember = this.members.find(m => m.id === id)
+                    chosenMember.message = "Sikeres befizetés!"
+                })
                 .catch(error => {
                     if (error.response.status >= 300) {
                         let chosenMember = this.members.find(m => m.id === id)
