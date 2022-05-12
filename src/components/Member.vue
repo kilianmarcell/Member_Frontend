@@ -23,7 +23,14 @@
             </div>
             <div id="createMember" class="text-center p-5 d-flex flex-column">
                 <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Név" v-model="this.state.myMember.name">
-                <input class="w-75 mx-auto fs-4 m-2" type="text" placeholder="Nem" v-model="this.state.myMember.gender">
+                <span class="text-danger text-center" v-if="v$.myMember.name.$error">
+                    {{ v$.myMember.name.$errors[0].$message }}
+                </span>
+                <select class="w-75 mx-auto fs-4 m-2" v-model="this.state.myMember.gender">
+                    <option value="M">Férfi</option>
+                    <option value="F">Nő</option>
+                    <option value="">Egyéb</option>
+                </select>
                 <input class="w-75 mx-auto fs-4 m-2 mb-4" type="datetime-local" placeholder="Születési év" v-model="this.state.myMember.birth_date">
                 <button class="btn btn-success w-25 mx-auto fs-4" @click="addMember">Tagfelvétel</button>
             </div>
@@ -38,8 +45,7 @@
 import axios from 'axios'
 import useVuelidate from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
-import { reactive } from '@vue/reactivity'
-import { computed } from '@vue/runtime-core'
+import { reactive, computed } from 'vue'
 
 export default {
     name: 'Member',
@@ -63,10 +69,7 @@ export default {
             return {
                 myMember: {
                     name: {
-                        required: helpers.withMessage('A név mező kitöltése kötelező!')
-                    },
-                    gender: {
-                        required: helpers.withMessage('A név mező kitöltése kötelező!')
+                        required: helpers.withMessage('A név mező kitöltése kötelező!', required)
                     }
                 }
             }
@@ -89,12 +92,15 @@ export default {
         },
 
         async addMember() {
-            await axios
-                .post('http://127.0.0.1:8000/api/members', this.myMember)
-                .catch(error => console.log(error))
-            
-            this.resetForm()
-            this.loadMembers()
+            this.v$.$validate()
+            if (!this.v$.$error) {
+                await axios
+                    .post('http://127.0.0.1:8000/api/members', this.state.myMember)
+                    .catch(error => console.log(error))
+                    
+                this.resetForm()
+                this.loadMembers()
+            }
         },
 
         async pay(id) {
@@ -113,7 +119,7 @@ export default {
         },
 
         resetForm() {
-            this.myMember = {
+            this.state.myMember = {
                 name: "",
                 gender: "",
                 birth_date: null
